@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <title>فصل ۲: برنامه نویسی یک بازی حدس عدد - زبان برنامه نویسی راست</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        :root[data-theme="light"] {
+            --bg: #ffffff;
+            --fg: #1f2328;
+            --heading-fg: #111827;
+            --code-bg: #f6f8fa;
+            --code-fg: #c92a2a;
+            --pre-bg: #1e293b;
+            --pre-fg: #f8fafc;
+            --filename-bg: #334155;
+            --filename-fg: #e2e8f0;
+            --border: #d0d7de;
+            --accent: #0969da;
+            --note-bg: #f0f7ff;
+            --note-border: #0969da;
+            --note-fg: #1e3a8a;
+            --book-note-bg: #fff8c5;
+            --book-note-border: #d4a72c;
+            --book-note-fg: #1f2328;
+            --caption-fg: #4b5563;
+            --header-bg: rgba(255, 255, 255, 0.9);
+            --btn-bg: #f3f4f6;
+            --btn-fg: #1f2937;
+            --btn-border: #d1d5db;
+        }
+
+        :root[data-theme="dark"] {
+            --bg: #161923;
+            --fg: #c9d1d9;
+            --heading-fg: #f0f6fc;
+            --code-bg: #272c3a;
+            --code-fg: #ff7b72;
+            --pre-bg: #0d1117;
+            --pre-fg: #e6edf3;
+            --filename-bg: #21262d;
+            --filename-fg: #c9d1d9;
+            --border: #30363d;
+            --accent: #58a6ff;
+            --note-bg: #1c2536;
+            --note-border: #388bfd;
+            --note-fg: #a5d6ff;
+            --book-note-bg: #2b2318;
+            --book-note-border: #d29922;
+            --book-note-fg: #e3b341;
+            --caption-fg: #8b949e;
+            --header-bg: rgba(22, 25, 35, 0.9);
+            --btn-bg: #21262d;
+            --btn-fg: #c9d1d9;
+            --btn-border: #30363d;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Vazirmatn", "Vazir", "IRANSans", "Segoe UI", Tahoma, sans-serif;
+            background-color: var(--bg);
+            color: var(--fg);
+            line-height: 1.9;
+            margin: 0;
+            padding: 0;
+            font-size: 16px;
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+        .top-bar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background-color: var(--header-bg);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border);
+            padding: 10px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .book-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--heading-fg);
+        }
+        .theme-toggle {
+            background-color: var(--btn-bg);
+            color: var(--btn-fg);
+            border: 1px solid var(--btn-border);
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.88rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+        .theme-toggle:hover {
+            border-color: var(--accent);
+        }
+        .page-wrapper {
+            max-width: 880px;
+            margin: 0 auto;
+            padding: 32px 24px 80px;
+        }
+        h1, h2, h3, h4 {
+            color: var(--heading-fg);
+            font-weight: 700;
+            margin-top: 2.2em;
+            margin-bottom: 0.8em;
+            line-height: 1.4;
+        }
+        h1 {
+            font-size: 2.1rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.4em;
+            margin-top: 0;
+        }
+        h2 {
+            font-size: 1.6rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3em;
+        }
+        h3 {
+            font-size: 1.3rem;
+        }
+        h4 {
+            font-size: 1.1rem;
+        }
+        p {
+            margin-top: 0;
+            margin-bottom: 1.25em;
+            text-align: justify;
+        }
+        code {
+            font-family: "JetBrains Mono", "Fira Code", Consolas, Monaco, monospace;
+            background-color: var(--code-bg);
+            color: var(--code-fg);
+            padding: 0.15em 0.4em;
+            border-radius: 4px;
+            font-size: 0.9em;
+            direction: ltr;
+            display: inline-block;
+        }
+        language-rust {
+            direction: ltr !importaint;
+        }
+        pre {
+            direction: ltr;
+            text-align: left;
+            background-color: var(--pre-bg);
+            color: var(--pre-fg);
+            border: 1px solid var(--border);
+            padding: 16px 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1.2em 0;
+            line-height: 1.55;
+            font-size: 0.92rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+        pre code {
+            background-color: transparent;
+            color: inherit;
+            padding: 0;
+            font-size: inherit;
+            display: block;
+        }
+        figure.listing {
+            margin: 1.8em 0;
+        }
+        span.filename {
+            display: inline-block;
+            direction: ltr;
+            background-color: var(--filename-bg);
+            color: var(--filename-fg);
+            border: 1px solid var(--border);
+            border-bottom: none;
+            padding: 4px 12px;
+            font-family: Consolas, monospace;
+            font-size: 0.85rem;
+            border-top-left-radius: 6px;
+            border-top-right-radius: 6px;
+            margin-bottom: -12px;
+            position: relative;
+            z-index: 1;
+        }
+        figcaption {
+            font-size: 0.92rem;
+            color: var(--caption-fg);
+            margin-top: 8px;
+            text-align: center;
+        }
+        blockquote.translator-note {
+            background-color: var(--note-bg);
+            border-right: 4px solid var(--note-border);
+            margin: 1.5em 0;
+            padding: 14px 18px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            color: var(--note-fg);
+        }
+        blockquote.translator-note strong {
+            display: block;
+            margin-bottom: 4px;
+            color: var(--accent);
+        }
+        aside.book-note {
+            background-color: var(--book-note-bg);
+            border-right: 4px solid var(--book-note-border);
+            color: var(--book-note-fg);
+            margin: 1.5em 0;
+            padding: 14px 18px;
+            border-radius: 6px;
+        }
+        kbd {
+            background-color: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-family: Consolas, monospace;
+            font-size: 0.85em;
+            direction: ltr;
+            display: inline-block;
+        }
+        ul, ol {
+            padding-right: 24px;
+            margin-bottom: 1.25em;
+        }
+        li {
+            margin-bottom: 0.5em;
+        }
+        hr {
+            border: 0;
+            border-top: 1px solid var(--border);
+            margin: 2.5em 0;
+        }
+    </style>
+</head>
+<body>
+<header class="top-bar">
+    <div class="book-title">زبان برنامه نویسی راست (ویرایش فارسی)</div>
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="تغییر تم">
+        <span id="themeIcon">🌙</span>
+        <span id="themeText">حالت تاریک</span>
+    </button>
+</header>
+<div class="page-wrapper">
+    <main>
+        <h1 id="programming-a-guessing-game">فصل دوم: برنامه نویسی یک بازی حدس عدد</h1>
+
+        <p>بیایید با انجام دادن یک پروژه عملی در کنار هم وارد دنیای راست شویم. این فصل شما را با چند مفهوم رایج در زبان راست آشنا می کند و نحوه استفاده از آن ها را در یک برنامه واقعی نشان می دهد. شما در این بخش با کلیدواژه های <code>let</code> و <code>match</code> و همچنین متدها و توابع وابسته و کریت های خارجی و موارد بیشتر آشنا خواهید شد. در فصل های آینده این مفاهیم را با جزئیات کامل بررسی خواهیم کرد اما در این فصل صرفا اصول پایه را تمرین می کنیم.</p>
+
+        <blockquote class="translator-note">
+            <strong>یادداشت مترجم درباره اصطلاحات فنی</strong>
+            در اکوسیستم راست به بسته های کد کامپایل شده یا کتابخانه ها اصطلاحا Crate (کریت) گفته می شود. همچنین منظور از Associated Functions (توابع وابسته) توابعی هستند که مستقیما روی خود یک نوع داده تعریف می شوند نه روی یک نمونه از آن که در زبان های دیگر مشابه متدهای استاتیک (Static Methods) عمل می کنند.
+        </blockquote>
+
+        <p>ما یک مسئله کلاسیک برنامه نویسی برای سطح مقدماتی را پیاده سازی خواهیم کرد که همان بازی حدس عدد است. نحوه کارکرد برنامه به این صورت است که ابتدا یک عدد صحیح تصادفی بین 1 تا 100 تولید می کند و سپس از بازیکن می خواهد که یک حدس وارد نماید. پس از وارد شدن عدد توسط کاربر برنامه مشخص می کند که حدس زده شده خیلی کوچک است یا خیلی بزرگ. اگر حدس کاربر درست باشد بازی یک پیام تبریک چاپ کرده و از برنامه خارج می شود.</p>
+
+        <h2 id="setting-up-a-new-project">راه اندازی یک پروژه جدید</h2>
+
+        <p>برای راه اندازی یک پروژه جدید به دایرکتوری <em>projects</em> که در فصل اول ایجاد کردید بروید و با استفاده از Cargo یک پروژه جدید به شکل زیر بسازید:</p>
+
+<pre><code class="language-console" dir="ltr">$ cargo new guessing_game
+$ cd guessing_game</code></pre>
+
+        <p>دستور اول یعنی <code>cargo new</code> نام پروژه (<code>guessing_game</code>) را به عنوان اولین آرگومان ورودی می گیرد. دستور دوم مسیر جاری ترمینال را به دایرکتوری پروژه جدید تغییر می دهد.</p>
+
+        <p>به فایل تولید شده <em>Cargo.toml</em> نگاه کنید:</p>
+
+        <figure class="listing">
+            <span class="filename">Filename: Cargo.toml</span>
+<pre><code class="language-toml">[package]
+name = "guessing_game"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]</code></pre>
+        </figure>
+
+        <p>همان طور که در فصل اول دیدید دستور <code>cargo new</code> یک برنامه «Hello, world!» برای شما تولید می کند. فایل <em>src/main.rs</em> را بررسی کنید:</p>
+
+        <figure class="listing">
+            <span class="filename">Filename: src/main.rs</span>
+<pre><code class="">fn main() {
+    println!("Hello, world!");
+}</code></pre>
+        </figure>
+
+        <p>اکنون بیایید این برنامه «Hello, world!» را کامپایل کرده و در همان مرحله با استفاده از دستور <code>cargo run</code> اجرا کنیم:</p>
+
+<pre><code class="language-console" dir="ltr">$ cargo run
+   Compiling guessing_game v0.1.0 (file:///projects/guessing_game)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.08s
+     Running `target/debug/guessing_game`
+Hello, world!</code></pre>
+
+        <p>دستور <code>run</code> زمانی که نیاز دارید به سرعت روی یک پروژه تغییرات پی در پی اعمال کنید بسیار کاربردی است. ما در این بازی دقیقا همین کار را انجام می دهیم و هر مرحله از کد را پیش از رفتن به مرحله بعدی به سرعت آزمایش می کنیم.</p>
+
+        <p>فایل <em>src/main.rs</em> را دوباره باز کنید. شما تمام کدهای این فصل را در این فایل خواهید نوشت.</p>
+
+        <h2 id="processing-a-guess">پردازش کردن یک حدس</h2>
+
+        <p>بخش اول برنامه بازی حدس عدد از کاربر ورودی می گیرد و آن ورودی را پردازش می کند و بررسی می نماید که داده وارد شده در قالب مورد انتظار باشد. برای شروع به بازیکن اجازه می دهیم که یک حدس وارد کند. کد موجود در فهرست 1-2 را در فایل <em>src/main.rs</em> وارد کنید.</p>
+
+        <figure class="listing">
+            <span class="filename">Filename: src/main.rs</span>
+<pre><code class="language-rust" dir="ltr" dir="ltr" dir="ltr">use std::io;
+
+fn main() {
+    println!("Guess the number!");
+
+    println!("Please input your guess.");
+
+    let mut guess = String::new();
+
+    io::stdin()
+        .read_line(&amp;mut guess)
+        .expect("Failed to read line");
+
+    println!("You guessed: {guess}");
+}</code></pre>
+            <figcaption>فهرست 1-2: کدی که یک حدس را از کاربر دریافت کرده و آن را چاپ می کند</figcaption>
+        </figure>
+
+        <p>این کد حاوی اطلاعات زیادی است بنابراین خط به خط آن را بررسی می کنیم. برای دریافت ورودی از کاربر و سپس چاپ نتیجه به عنوان خروجی نیاز داریم کتابخانه ورودی و خروجی <code>io</code> را به محدوده دید برنامه (Scope) بیاوریم. کتابخانه <code>io</code> از کتابخانه استاندارد راست که با نام <code>std</code> شناخته می شود می آید:</p>
+
+<pre><code class="language-rust" dir="ltr" dir="ltr" dir="ltr">use std::io;</code></pre>
+
+        <p>به طور پیش فرض زبان راست مجموعه ای از موارد تعریف شده در کتابخانه استاندارد را در محدوده دید تمامی برنامه ها وارد می کند. این مجموعه با نام <em>prelude</em> شناخته می شود و شما می توانید تمام محتویات آن را در مستندات رسمی کتابخانه استاندارد مشاهده کنید.</p>
+
+        <blockquote class="translator-note">
+            <strong>یادداشت مترجم درباره Prelude</strong>
+            پیش نیاز یا Prelude مجموعه ای از پرکاربردترین نوع داده ها و ویژگی ها در زبان راست مانند <code>String</code> و <code>Vec</code> و <code>Option</code> است که کامپایلر به صورت خودکار در ابتدای هر فایل بارگذاری می کند تا برنامه نویس مجبور نباشد برای ابتدایی ترین قابلیت ها به صورت دستی دستور <code>use</code> بنویسد.
+        </blockquote>
+
+        <p>اگر نوع داده ای که می خواهید استفاده کنید در prelude نباشد باید آن را به صورت صریح با دستور <code>use</code> وارد محدوده دید برنامه کنید. استفاده از کتابخانه <code>std::io</code> قابلیت های مفیدی از جمله امکان دریافت ورودی از کاربر را در اختیار شما قرار می دهد.</p>
+
+        <p>همان طور که در فصل اول دیدید تابع <code>main</code> نقطه ورود به برنامه است:</p>
+
+<pre><code class="language-rust" dir="ltr" dir="ltr" dir="ltr">fn main() {</code></pre>
+
+        <p>نحو نوشتاری <code>fn</code> یک تابع جدید را اعلان می کند و پرانتزهای خالی <code>()</code> نشان می دهند که این تابع هیچ پارامتری دریافت نمی کند و آکولاد باز <code>{</code> بدنه تابع را آغاز می نماید.</p>
+
+        <p>همچنین همان طور که در فصل اول آموختید <code>println!</code> یک ماکرو است که یک رشته متنی را روی صفحه نمایش چاپ می کند:</p>
+
+<pre><code class="language-rust" dir="ltr" dir="ltr" dir="ltr">    println!("Guess the number!");
+
+    println!("Please input your guess.");</code></pre>
+
+        <p>این کد یک پیام راهنما چاپ می کند که موضوع بازی را مشخص کرده و از کاربر درخواست می کند ورودی خود را ثبت نماید.</p>
+
+        <h3 id="storing-values-with-variables">ذخیره مقادیر با استفاده از متغیرها</h3>
+
+        <p>در قدم بعدی یک متغیر برای ذخیره کردن ورودی کاربر ایجاد می کنیم:</p>
+
+<pre><code class="language-rust" dir="ltr" dir="ltr" dir="ltr">    let mut guess = String::new();</code></pre>
+
+        <p>حالا برنامه در حال جذاب شدن است. اتفاقات زیادی در این خط کوتاه رخ می دهد. ما از دستور <code>let</code> برای ایجاد متغیر استفاده می کنیم. در ادامه یک مثال دیگر را مشاهده می کنید:</p>
+
+<pre><code class="language-rust" dir="ltr" dir="ltr" dir="ltr">let apples = 5;</code></pre>
+
+        <p>این خط یک متغیر جدید به نام <code>apples</code> ایجاد می کند و آن را به مقدار <code>5</code> مقید (Bind) می سازد. در زبان راست متغیرها به طور پیش فرض تغییرناپذیر (Immutable) هستند به این معنی که وقتی مقداری به متغیر بدهیم آن مقدار دیگر تغییر نخواهد کرد. ما این مفهوم را با جزئیات کامل در بخش «متغیرها و تغییرپذیری» در فصل سوم بررسی خواهیم کرد. برای اینکه یک متغیر را تغییرپذیر (Mutable) کنیم کلیدواژه <code>mut</code> را قبل از نام متغیر قرار می دهیم:</p>
+
+<pre><code class="language-rust" dir="ltr" dir="ltr" dir="ltr">let apples = 5; // immutable
+let mut bananas = 5; // mutable</code></pre>
+
+        <aside class="book-note">
+            <p><strong>نکته:</strong> علامت <code>//</code> یک توضیح (Comment) را شروع می کند که تا انتهای همان خط ادامه می یابد. کامپایلر راست هر چیزی که داخل توضیحات باشد را نادیده می گیرد. در فصل سوم درباره توضیحات بیشتر صحبت خواهیم کرد.</p>
+        </aside>
+
+        <p>با بازگشت به برنامه بازی حدس عدد اکنون می دانید که دستور <code>let mut guess</code> یک متغیر تغییرپذیر به نام <code>guess</code> معرفی می کند. علامت مساوی (<code>=</code>) به راست می گوید که می خواهیم همین الان چیزی را به این متغیر مقید کنیم. در سمت راست علامت مساوی مقداری قرار دارد که متغیر <code>guess</code> به آن مقید می شود که همان نتیجه فراخوانی <code>String::new</code> است. این تابع یک نمونه جدید از نوع <code>String</code> برمی گرداند. <code>String</code> یک نوع داده رشته ای ارائه شده توسط کتابخانه استاندارد است که متنی با قابلیت رشد اندازه و کدگذاری شده بر پایه UTF-8 را نگهداری می کند.</p>
+
+        <p>علامت دو نقطه دوتایی <code>::</code> در عبارت <code>::new</code> نشان می دهد که <code>new</code> یک تابع وابسته متعلق به نوع <code>String</code> است. تابع وابسته تابعی است که روی یک نوع داده پیاده سازی می شود که در اینجا نوع <code>String</code> است. این تابع <code>new</code> یک رشته جدید و خالی می سازد. شما تابع <code>new</code> را روی بسیاری از نوع داده ها خواهید دید زیرا یک نام مرسوم برای توابعی است که یک مقدار جدید از یک نوع خاص تولید می کنند.</p>
+
+        <p>به طور خلاصه خط <code>let mut guess = String::new();</code> یک متغیر تغییرپذیر ایجاد کرده که در حال حاضر به یک نمونه جدید و خالی از نوع <code>String</code> مقید شده است.</p>
+
+        <h3 id="receiving-user-input">دریافت ورودی کاربر</h3>
+
+        <p>به خاطر بیاورید که ما قابلیت های ورودی و خروجی را از کتابخانه استاندارد با دستور <code>use std::io;</code> در خط اول برنامه وارد کردیم. اکنون تابع <code>stdin</code> را از ماژول <code>io</code> فراخوانی می کنیم که به ما اجازه می دهد ورودی کاربر را مدیریت نماییم:</p>
+
+<pre><code class="language-rust" dir="ltr" dir="ltr" dir="ltr">    io::stdin()
+        .read_line(&amp;mut guess)</code></pre>
+
+        <p>اگر ماژول <code>io</code> را با دستور <code>use std::io;</code> در ابتدای برنامه وارد نکرده بودیم همچنان می توانستیم با نوشتن عبارت <code>std::io::stdin</code> از این تابع استفاده کنیم. تابع <code>stdin</code> یک نمونه از نوع <code>std::io::Stdin</code> برمی گرداند که نوع داده ای برای نمایش یک دستگیره ارتباطی (Handle) به ورودی استاندارد ترمینال شماست.</p>
+
+        <p>در ادامه خط <code>.read_line(&amp;mut guess)</code> متد <code>read_line</code> را روی دستگیره ورودی استاندارد فراخوانی می کند تا ورودی را از کاربر بگیرد. ما همچنین عبارت <code>&amp;mut guess</code> را به عنوان آرگومان به متد <code>read_line</code> ارسال می کنیم تا به آن بگوییم ورودی کاربر را در کدام رشته ذخیره کند. وظیفه کامل متد <code>read_line</code> این است که هر متنی را که کاربر در ورودی استاندارد تایپ می کند بگیرد و بدون بازنویسی محتویات قبلی به انتهای یک رشته اضافه کند و به همین دلیل است که آن رشته را به عنوان آرگومان ارسال می کنیم. آرگومان رشته باید تغییرپذیر باشد تا متد بتواند محتوای رشته را تغییر دهد.</p>
+
+        <p>علامت <code>&amp;</code> نشان می دهد که این آرگومان یک ارجاع (Reference) است که راهی در اختیار شما می گذارد تا بخش های مختلف کد بتوانند بدون نیاز به کپی کردن چندباره یک داده در حافظه به آن دسترسی داشته باشند. ارجاع ها ویژگی پیچیده ای هستند و یکی از مزایای اصلی زبان راست این است که استفاده از ارجاع ها در آن بسیار ایمن و آسان است. برای تکمیل این برنامه نیازی به دانستن جزئیات کامل آن ها ندارید. در حال حاضر تنها چیزی که باید بدانید این است که درست مانند متغیرها ارجاع ها نیز به طور پیش فرض تغییرناپذیر هستند. بنابراین برای تغییرپذیر کردن آن باید به جای <code>&amp;guess</code> عبارت <code>&amp;mut guess</code> را بنویسید. فصل چهارم مبحث ارجاع ها را به طور کامل توضیح خواهد داد.</p>
+
+        <blockquote class="translator-note">
+            <strong>یادداشت مترجم درباره ارجاع تغییرپذیر (&amp;mut)</strong>
+            در زبان راست ارسال متغیر به یک تابع به طور پیش فرض مالکیت (Ownership) آن متغیر را منتقل می کند. با استفاده از علامت <code>&amp;</code> متغیر را قرض می دهیم (Borrowing) و با افزودن <code>mut</code> اجازه می دهیم تابع مقصد محتوای متغیر قرض گرفته شده را در همان آدرس حافظه تغییر دهد.
+        </blockquote>
+
+        <h3 id="handling-potential-failure-with-result">مدیریت خطاهای احتمالی با نوع Result</h3>
+
+        <p>ما همچنان در حال کار روی همین خط کد هستیم. اکنون سومین خط متنی را بررسی می کنیم اما توجه داشته باشید که این بخش هنوز جزئی از یک خط منطقی واحد از کد است. بخش بعدی این متد است:</p>
+
+<pre><code class="language-rust" dir="ltr" dir="ltr" dir="ltr">        .expect("Failed to read line");</code></pre>
+
+        <p>ما می توانستیم این کد را به صورت یک خطی بنویسیم:</p>
+
+<pre><code class="language-rust" dir="ltr" dir="ltr" dir="ltr">io::stdin().read_line(&amp;mut guess).expect("Failed to read line");</code></pre>
+
+        <p>با این حال خواندن یک خط طولانی دشوار است بنابراین بهتر است آن را بشکنیم. اغلب اوقات زمانی که متدی را با نحو نوشتاری <code>.method_name()</code> فراخوانی می کنید عاقلانه است که برای شکستن خطوط طولانی از خط جدید و فاصله گذاری استفاده نمایید. اکنون بررسی می کنیم که این خط چه کاری انجام می دهد.</p>
+
+        <p>همان طور که پیش تر اشاره شد متد <code>read_line</code> هر چیزی را که کاربر وارد کند در رشته ای که به آن پاس داده ایم قرار می دهد اما علاوه بر آن یک مقدار از نوع <code>Result</code> نیز برمی گرداند. <code>Result</code> یک نوع شمارشی یا به اختصار <em>enum</em> است که نوع داده ای محسوب می شود که می تواند در یکی از چندین وضعیت ممکن قرار بگیرد. ما به هر یک از این وضعیت های ممکن یک واریانت (Variant) می گوییم.</p>
+
+        <p>فصل ششم نوع های شمارشی را با جزئیات بیشتری پوشش خواهد داد. هدف از طراحی نوع های <code>Result</code> کدگذاری کردن اطلاعات مربوط به مدیریت خطاست.</p>
+
+        <p>واریانت های نوع <code>Result</code> شامل <code>Ok</code> و <code>Err</code> هستند. واریانت <code>Ok</code> نشان می دهد که عملیات موفقیت آمیز بوده است و مقدار تولید شده با موفقیت در داخل <code>Ok</code> قرار دارد. واریانت <code>Err</code> به این معنی است که عملیات با شکست مواجه شده و اطلاعات مربوط به چگونگی یا چرایی شکست عملیات را در خود نگه می دارد.</p>
+
+        <p>مقادیر نوع <code>Result</code> نیز مانند هر نوع داده دیگری دارای متدهایی هستند که روی آن ها تعریف شده است. یک نمونه از <code>Result</code> دارای متد <code>expect</code> است که می توانید آن را فراخوانی کنید. اگر این نمونه از <code>Result</code> یک مقدار <code>Err</code> باشد متد <code>expect</code> باعث متوقف شدن ناگهانی برنامه (Crash) شده و پیامی را که به عنوان آرگومان به <code>expect</code> داده اید نمایش می دهد. اگر متد <code>read_line</code> یک مقدار <code>Err</code> برگرداند احتمالا ناشی از یک خطای سطح پایین در سیستم عامل است. اگر این نمونه از <code>Result</code> یک مقدار <code>Ok</code> باشد متد <code>expect</code> مقدار بازگشتی را که <code>Ok</code> در خود نگه داشته است برمی دارد و همان مقدار را به شما بازمی گرداند تا بتوانید از آن استفاده کنید. در این مورد آن مقدار برابر است با تعداد بایت هایی که کاربر در ورودی وارد کرده است.</p>
+
+        <p>اگر متد <code>expect</code> را فراخوانی نکنید برنامه کامپایل می شود اما یک هشدار دریافت خواهید کرد:</p>
+
+<pre><code class="language-console" dir="ltr">$ cargo build
+   Compiling guessing_game v0.1.0 (file:///projects/guessing_game)
+warning: unused `Result` that must be used
+  --&gt; src/main.rs:10:5
+   |
+10 |     io::stdin().read_line(&amp;mut guess);
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: this `Result` may be an `Err` variant, which should be handled
+   = note: `#[warn(unused_must_use)]` on by default
+help: use `let _ = ...` to ignore the resulting value
+   |
+10 |     let _ = io::stdin().read_line(&amp;mut guess);
+   |     +++++++
+
+warning: `guessing_game` (bin "guessing_game") generated 1 warning
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.59s</code></pre>
+
+        <p>کامپایلر راست هشدار می دهد که شما از مقدار <code>Result</code> بازگشتی از <code>read_line</code> استفاده نکرده اید و این نشان می دهد که برنامه یک خطای احتمالی را مدیریت نکرده است.</p>
+
+        <p>راه درست برای از بین بردن این هشدار نوشتن کد مدیریت خطاست اما در حالت فعلی چون فقط می خواهیم در صورت بروز مشکل برنامه متوقف شود می توانیم از <code>expect</code> استفاده کنیم. در فصل نهم درباره بازیابی برنامه از خطاها خواهید آموخت.</p>
+
+        <h3 id="printing-values-with-println-placeholders">چاپ مقادیر با استفاده از نگهدارنده های جا در println!</h3>
+
+        <p>به جز آکولاد بسته تنها یک خط دیگر در کد تا اینجا باقی مانده است که باید بررسی شود:</p>
+
+<pre><code class="language-rust" dir="ltr" dir="ltr" dir="ltr">    println!("You guessed: {guess}");</code></pre>
+
+        <p>این خط رشته ای را که اکنون حاوی ورودی کاربر است چاپ می کند. علامت های آکولاد <code>{}</code> یک نگهدارنده جا (Placeholder) هستند. می توانید <code>{}</code> را مانند چنگک های یک خرچنگ کوچک در نظر بگیرید که یک مقدار را در جای خود نگه می دارند. هنگام چاپ کردن مقدار یک متغیر نام متغیر می تواند داخل آکولاد قرار گیرد. هنگام چاپ نتیجه ارزیابی یک عبارت ریاضی یا منطقی آکولادهای خالی را در رشته قالب بندی قرار دهید و سپس در ادامه رشته قالب بندی فهرستی از عبارات جدا شده با ویرگول را بنویسید تا به همان ترتیب در هر آکولاد خالی چاپ شوند. چاپ کردن یک متغیر و نتیجه یک عبارت در یک فراخوانی واحد از <code>println!</code> به این شکل خواهد بود:</p>
+
+<pre><code class="language-rust" dir="ltr" dir="ltr" dir="ltr">let x = 5;
+let y = 10;
+
+println!("x = {x} and y + 2 = {}", y + 2);</code></pre>
+
+        <p>این کد عبارت <code>x = 5 and y + 2 = 12</code> را چاپ خواهد کرد.</p>
+
+        <h3 id="testing-the-first-part">آزمایش کردن بخش اول</h3>
+
+        <p>بیایید بخش اول بازی حدس عدد را آزمایش کنیم. آن را با استفاده از دستور <code>cargo run</code> اجرا نمایید:</p>
+
+<pre><code class="language-console" dir="ltr">$ cargo run
+   Compiling guessing_game v0.1.0 (file:///projects/guessing_game)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 6.44s
+     Running `target/debug/guessing_game`
+Guess the number!
+Please input your guess.
+6
+You guessed: 6</code></pre>
+
+        <p>در این مرحله بخش اول بازی کامل شده است. ما از صفحه کلید ورودی می گیریم و سپس آن را چاپ می کنیم.</p>
+
+        <h2 id="generating-a-secret-number">تولید کردن یک عدد مخفی</h2>
+
+        <p>در مرحله بعد باید یک عدد مخفی تولید کنیم که کاربر برای حدس زدن آن تلاش کند. عدد مخفی باید هر بار متفاوت باشد تا بازی برای بیش از یک بار اجرا جذابیت داشته باشد. ما از یک عدد تصادفی بین 1 تا 100 استفاده خواهیم کرد تا بازی بیش از حد دشوار نشود. زبان راست هنوز قابلیت تولید اعداد تصادفی را در کتابخانه استاندارد خود ندارد. با این حال تیم توسعه راست یک کریت با نام <code>rand</code> با همین قابلیت ارائه کرده است.</p>
+
+        <h3 id="increasing-functionality-with-a-crate">افزایش قابلیت ها با استفاده از یک کریت</h3>
+
+        <p>به یاد داشته باشید که یک کریت مجموعه ای از فایل های کد منبع زبان راست است. پروژه ای که ما در حال ساخت آن هستیم یک کریت باینری (Binary Crate) است که یک فایل قابل اجرا تولید می کند. کریت <code>rand</code> یک کریت کتابخانه ای (Library Crate) است که حاوی کدهایی برای استفاده در سایر برنامه هاست و به تنهایی قابل اجرا نیست.</p>
+
+        <p>استفاده از کریت های خارجی جایی است که ابزار Cargo واقعا می درخشد. قبل از اینکه بتوانیم کدی با استفاده از <code>rand</code> بنویسیم باید فایل <em>Cargo.toml</em> را ویرایش کنیم تا کریت <code>rand</code> را به عنوان یک وابستگی (Dependency) شامل شود. اکنون آن فایل را باز کنید و خط زیر را در پایین آن و زیر بخش <code>[dependencies]</code> که Cargo برای شما ایجاد کرده است اضافه نمایید. مطمئن شوید که مشخصات <code>rand</code> را دقیقا به همین شکل و با همین شماره نسخه وارد می کنید وگرنه ممکن است مثال های کد این آموزش کار نکنند:</p>
+
+        <figure class="listing">
+            <span class="filename">Filename: Cargo.toml</span>
+<pre><code class="language-toml">[dependencies]
+rand = "0.8.5"</code></pre>
+        </figure>
+
+        <p>در فایل <em>Cargo.toml</em> هر چیزی که بعد از یک سرصفحه می آید بخشی از آن قسمت محسوب می شود و تا زمانی که بخش دیگری شروع شود ادامه می یابد. در بخش <code>[dependencies]</code> شما به Cargo می گویید که پروژه شما به کدام کریت های خارجی و به چه نسخه هایی از آن ها وابسته است. در این مورد ما کریت <code>rand</code> را با مشخصه نسخه معنایی <code>0.8.5</code> تعیین کرده ایم. ابزار Cargo استاندارد نسخه گذاری معنایی (Semantic Versioning) که گاهی <em>SemVer</em> نامیده می شود را درک می کند که یک استاندارد برای نوشتن شماره نسخه هاست. مشخصه <code>0.8.5</code> در واقع خلاصه ای برای <code>^0.8.5</code> است به این معنی که هر نسخه ای که حداقل 0.8.5 و پایین تر از 0.9.0 باشد قابل قبول است.</p>
+
+        <p>ابزار Cargo این نسخه ها را دارای رابط برنامه نویسی کاربردی (API) عمومی سازگار با نسخه 0.8.5 در نظر می گیرد و این مشخصه تضمین می کند که شما آخرین نسخه اصلاحی (Patch) را دریافت خواهید کرد که همچنان با کدهای این فصل کامپایل می شود. هیچ تضمینی وجود ندارد که نسخه 0.9.0 یا بالاتر دارای همان API باشد که مثال های بعدی از آن استفاده می کنند.</p>
+
+        <p>اکنون بدون تغییر دادن هیچ یک از کدها پروژه را همان طور که در فهرست 2-2 نشان داده شده است بسازید.</p>
+
+        <figure class="listing">
+<pre><code class="language-console" dir="ltr">$ cargo build
+  Updating crates.io index
+   Locking 15 packages to latest compatible versions
+    Adding cfg-if v1.0.0
+    Adding getrandom v0.2.15
+    Adding libc v0.2.164
+    Adding ppv-lite86 v0.2.20
+    Adding proc-macro2 v1.0.89
+    Adding quote v1.0.37
+    Adding rand v0.8.5
+    Adding rand_chacha v0.3.1
+    Adding rand_core v0.6.4
+    Adding syn v2.0.87
+    Adding unicode-ident v1.0.13
+    Adding wasi v0.11.0+wasi-snapshot-preview1
+    Adding winapi v0.3.9
+    Adding winapi-i686-pc-windows-gnu v0.4.0
+    Adding winapi-x86_64-pc-windows-gnu v0.4.0
+  Downloaded rand_core v0.6.4
+  Downloaded rand_chacha v0.3.1
+  Downloaded rand v0.8.5
+  Downloaded getrandom v0.2.15
+  Downloaded cfg-if v1.0.0
+  Downloaded libc v0.2.164
+  Downloaded ppv-lite86 v0.2.20
+  Downloaded 7 crates (960.5 KB) in 1.54s
+   Compiling cfg-if v1.0.0
+   Compiling ppv-lite86 v0.2.20
+   Compiling libc v0.2.164
+   Compiling getrandom v0.2.15
+   Compiling rand_core v0.6.4
+   Compiling rand_chacha v0.3.1
+   Compiling rand v0.8.5
+   Compiling guessing_game v0.1.0 (file:///projects/guessing_game)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.48s</code></pre>
+            <figcaption>فهرست 2-2: خروجی حاصل از اجرای دستور cargo build پس از افزودن کریت rand به عنوان وابستگی</figcaption>
+        </figure>
+
+        <p>ممکن است شما شماره نسخه های متفاوتی (اما همگی سازگار با کد به لطف SemVer) و خطوط متفاوتی (بسته به سیستم عامل) ببینید و ترتیب خطوط نیز ممکن است متفاوت باشد.</p>
+
+        <p>زمانی که یک وابستگی خارجی را وارد می کنیم Cargo آخرین نسخه ها از هر چیزی را که آن وابستگی نیاز دارد از <em>رجیستری</em> واکشی می کند که یک کپی از داده های سایت Crates.io است. Crates.io جایی است که افراد در اکوسیستم راست پروژه های متن باز راست خود را برای استفاده دیگران منتشر می کنند.</p>
+
+        <p>پس از به روزرسانی رجیستری ابزار Cargo بخش <code>[dependencies]</code> را بررسی می کند و هر کریت فهرست شده ای را که هنوز دانلود نشده است دانلود می نماید. در این مورد اگرچه ما فقط <code>rand</code> را به عنوان وابستگی فهرست کردیم اما Cargo سایر کریت هایی را که <code>rand</code> برای کار کردن به آن ها وابسته است نیز دریافت کرد. پس از دانلود کردن کریت ها راست آن ها را کامپایل می کند و سپس پروژه را با وابستگی های در دسترس کامپایل می نماید.</p>
+
+        <p>اگر بلافاصله بدون ایجاد هیچ تغییری دستور <code>cargo build</code> را دوباره اجرا کنید به جز خط <code>Finished</code> هیچ خروجی دیگری دریافت نخواهید کرد. ابزار Cargo می داند که وابستگی ها را قبلا دانلود و کامپایل کرده است و شما هم چیزی را در فایل <em>Cargo.toml</em> خود تغییر نداده اید. همچنین Cargo می داند که شما کدهای خودتان را نیز تغییر نداده اید بنابراین آن ها را هم دوباره کامپایل نمی کند. زمانی که کاری برای انجام دادن وجود نداشته باشد به سادگی خارج می شود.</p>
+
+        <p>اگر فایل <em>src/main.rs</em> را باز کنید و یک تغییر جزئی انجام دهید و سپس آن را ذخیره کرده و دوباره بسازید فقط دو خط خروجی مشاهده خواهید کرد:</p>
+
+<pre><code class="language-console" dir="ltr">$ cargo build
+   Compiling guessing_game v0.1.0 (file:///projects/guessing_game)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.15s</code></pre>
+
+        <p>این خطوط نشان می دهند که Cargo فقط ساخت پروژه را با تغییر کوچک شما در فایل <em>src/main.rs</em> به روز می کند. وابستگی های شما تغییر نکرده اند بنابراین Cargo می داند که می تواند از همان مواردی که قبلا دانلود و کامپایل شده است دوباره استفاده کند.</p>
+
+        <h4 id="ensuring-reproducible-builds-with-the-cargolock-file">تضمین ساخت های تکرارپذیر با فایل Cargo.lock</h4>
+
+        <p>ابزار Cargo دارای سازوکاری است که تضمین می کند هر بار که شما یا هر شخص دیگری کدتان را می سازید بتوانید دقیقا همان خروجی ساخت (Artifact) را بازسازی نمایید. Cargo تنها از نسخه های مشخص شده وابستگی های شما استفاده می کند تا زمانی که خودتان خلاف آن را اعلام کنید. به عنوان مثال فرض کنید هفته آینده نسخه 0.8.6 کریت <code>rand</code> منتشر شود و آن نسخه حاوی یک رفع اشکال مهم باشد اما همچنین دارای یک پسرفت (Regression) باشد که کد شما را خراب می کند. برای مدیریت این موضوع راست فایل <em>Cargo.lock</em> را در اولین باری که دستور <code>cargo build</code> را اجرا می کنید ایجاد می نماید بنابراین ما اکنون این فایل را در دایرکتوری <em>guessing_game</em> داریم.</p>
+
+        <p>زمانی که برای اولین بار یک پروژه را می سازید Cargo تمام نسخه های وابستگی ها را که با معیارها مطابقت دارند محاسبه می کند و سپس آن ها را در فایل <em>Cargo.lock</em> می نویسد. وقتی در آینده پروژه خود را بسازید Cargo وجود فایل <em>Cargo.lock</em> را می بیند و به جای انجام دوباره تمام کارهای محاسبه نسخه ها از نسخه های مشخص شده در همان فایل استفاده می کند. این قابلیت به شما اجازه می دهد به صورت خودکار یک ساخت تکرارپذیر داشته باشید. به عبارت دیگر پروژه شما به لطف فایل <em>Cargo.lock</em> روی نسخه 0.8.5 باقی می ماند تا زمانی که به صورت صریح آن را ارتقا دهید. از آنجا که فایل <em>Cargo.lock</em> برای ساخت های تکرارپذیر اهمیت زیادی دارد اغلب به همراه بقیه کدهای پروژه در سیستم کنترل نسخه (مانند Git) ثبت می شود.</p>
+
+        <h4 id="updating-a-crate-to-get-a-new-version">به روزرسانی یک کریت برای دریافت نسخه جدید</h4>
+
+        <p>زمانی که واقعا بخواهید یک کریت را به روزرسانی کنید Cargo دستور <code>update</code> را ارائه می دهد که فایل <em>Cargo.lock</em> را نادیده می گیرد و آخرین نسخه هایی را که با مشخصات شما در فایل <em>Cargo.toml</em> مطابقت دارند پیدا می کند. سپس Cargo آن نسخه ها را در فایل <em>Cargo.lock</em> می نویسد. در غير این صورت به طور پیش فرض Cargo فقط به دنبال نسخه های بزرگ تر از 0.8.5 و کوچک تر از 0.9.0 خواهد گشت. اگر کریت <code>rand</code> دو نسخه جدید 0.8.6 و 0.9.0 را منتشر کرده باشد در صورت اجرای دستور <code>cargo update</code> موارد زیر را مشاهده خواهید کرد:</p>
+
+<pre><code class="language-console" dir="ltr">$ cargo update
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+    Updating rand v0.8.5 -&gt; v0.8.6 (available: v0.9.0)</code></pre>
+
+        <p>ابزار Cargo نسخه 0.9.0 را نادیده می گیرد. در این مرحله همچنین متوجه تغییری در فایل <em>Cargo.lock</em> خود خواهید شد که نشان می دهد نسخه کریت <code>rand</code> که اکنون استفاده می کنید 0.8.6 است. برای استفاده از نسخه 0.9.0 کریت <code>rand</code> یا هر نسخه ای در سری 0.9.x باید فایل <em>Cargo.toml</em> را به این شکل به روز کنید:</p>
+
+<pre><code class="language-toml">[dependencies]
+rand = "0.9.0"</code></pre>
+
+        <p>دفعه بعدی که دستور <code>cargo build</code> را اجرا کنید Cargo رجیستری کریت های موجود را به روز می کند و نیازمندی های مربوط به <code>rand</code> را با توجه به نسخه جدیدی که مشخص کرده اید دوباره ارزیابی می نماید.</p>
+
+        <p>مطالب بسیار بیشتری برای گفتن درباره Cargo و اکوسیستم آن وجود دارد که در فصل چهاردهم بررسی خواهیم کرد اما در حال حاضر همین مقدار اطلاعات تمام چیزی است که باید بدانید.</p>
+
+        <h3 id="generating-a-random-number">تولید کردن یک عدد تصادفی</h3>
+
+        <p>بیایید استفاده از <code>rand</code> را برای تولید عددی جهت حدس زدن شروع کنیم. گام بعدی به روزرسانی فایل <em>src/main.rs</em> است که در فهرست 3-2 نشان داده شده است.</p>
+
+        <figure class="listing">
+            <span class="filename">Filename: src/main.rs</span>
+<pre><code class="">use std::io;
+use rand::Rng;
+
+fn main() {
+    println!("Guess the number!");
+
+    let secret_number = rand::rng().random_range(1..=100);
+
+    println!("The secret number is: {secret_number}");
+
+    println!("Please input your guess.");
+
+    let mut guess = String::new();
+
+    io::stdin()
+        .read_line(&amp;mut guess)
+        .expect("Failed to read line");
+
+    println!("You guessed: {guess}");
+}</code></pre>
+            <figcaption>فهرست 3-2: افزودن کد برای تولید یک عدد تصادفی</figcaption>
+        </figure>
+
+        <p>ابتدا خط <code>use rand::Rng;</code> را اضافه می کنیم. ویژگی (Trait) با نام <code>Rng</code> متدهایی را تعریف می کند که تولیدکننده های اعداد تصادفی پیاده سازی می کنند و این ویژگی باید در محدوده دید برنامه باشد تا بتوانیم از آن متدها استفاده کنیم. فصل دهم ویژگی ها را با جزئیات کامل پوشش خواهد داد.</p>
+
+        <blockquote class="translator-note">
+            <strong>یادداشت مترجم درباره Trait (ویژگی)</strong>
+            مفهوم Trait در زبان راست بسیار شبیه به Interface در زبان های دیگر است و مجموعه ای از رفتارها و متدها را تعریف می کند که یک نوع داده می تواند پیاده سازی کند. در راست برای فراخوانی متدهای یک Trait روی یک شیء، خود آن Trait حتما باید با دستور <code>use</code> وارد فایل جاری شده باشد.
+        </blockquote>
+
+        <p>همچنین در میانه کد دو خط اضافه می کنیم. در خط اول تابع <code>rand::rng</code> را فراخوانی می کنیم که تولیدکننده عدد تصادفی مورد نظرمان را به ما می دهد. این تولیدکننده مختص به رشته اجرایی (Thread) فعلی است و توسط سیستم عامل مقداردهی اولیه (Seed) شده است. سپس متد <code>random_range</code> را روی تولیدکننده عدد تصادفی فراخوانی می کنیم. این متد توسط ویژگی <code>Rng</code> که با عبارت <code>use rand::Rng;</code> وارد محدوده دید کردیم تعریف شده است. متد <code>random_range</code> یک عبارت بازه ای (Range Expression) را به عنوان آرگومان می گیرد و یک عدد تصادفی در آن بازه تولید می کند. نوع عبارت بازه ای که در اینجا استفاده می کنیم به شکل <code>start..=end</code> است و شامل کران پایین و کران بالا می شود بنابراین برای درخواست عددی بین 1 تا 100 باید <code>1..=100</code> را مشخص کنیم.</p>
+
+        <aside class="book-note">
+            <p><strong>نکته:</strong> شما به خودی خود نخواهید دانست که کدام ویژگی ها را باید با <code>use</code> وارد کنید و کدام متدها و توابع را از یک کریت فراخوانی نمایید بنابراین هر کریت دارای مستنداتی با دستورالعمل های نحوه استفاده از آن است. یکی دیگر از قابلیت های جذاب Cargo این است که اجرای دستور <code>cargo doc --open</code> مستندات ارائه شده توسط تمامی وابستگی های شما را به صورت محلی می سازد و آن را در مرورگر شما باز می کند. اگر به سایر قابلیت های کریت <code>rand</code> علاقه مند هستید برای مثال دستور <code>cargo doc --open</code> را اجرا کنید و روی <code>rand</code> در نوار کناری سمت چپ کلیک نمایید.</p>
+        </aside>
+
+        <p>خط دومی که اضافه کردیم عدد مخفی را چاپ می کند. این کار زمانی که در حال توسعه برنامه هستیم برای آزمایش کردن آن مفید است اما در نسخه نهایی آن را حذف خواهیم کرد. اگر برنامه به محض شروع شدن پاسخ را چاپ کند دیگر بازی چندانی نخواهد بود.</p>
+
+        <p>سعی کنید برنامه را چند بار اجرا نمایید:</p>
+
+<pre><code class="language-console" dir="ltr">$ cargo run
+   Compiling guessing_game v0.1.0 (file:///projects/guessing_game)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.53s
+     Running `target/debug/guessing_game`
+Guess the number!
+The secret number is: 7
+Please input your guess.
+4
+You guessed: 4
+
+$ cargo run
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.02s
+     Running `target/debug/guessing_game`
+Guess the number!
+The secret number is: 83
+Please input your guess.
+5
+You guessed: 5</code></pre>
+
+        <p>شما باید اعداد تصادفی متفاوتی دریافت کنید و همه آن ها باید اعدادی بین 1 تا 100 باشند. کارتان عالی بود.</p>
+
+        <h2 id="comparing-the-guess-to-the-secret-number">مقایسه کردن حدس با عدد مخفی</h2>
+
+        <p>اکنون که ورودی کاربر و یک عدد تصادفی را داریم می توانیم آن ها را با هم مقایسه کنیم. این گام در فهرست 4-2 نشان داده شده است. توجه داشته باشید که این کد هنوز کامپایل نخواهد شد که دلیل آن را توضیح خواهیم داد.</p>
+
+        <figure class="listing">
+            <span class="filename">Filename: src/main.rs</span>
+<pre><code class="">use rand::Rng;
+use std::cmp::Ordering;
+use std::io;
+
+fn main() {
+    // --snip--
+
+    println!("You guessed: {guess}");
+
+    match guess.cmp(&amp;secret_number) {
+        Ordering::Less =&gt; println!("Too small!"),
+        Ordering::Greater =&gt; println!("Too big!"),
+        Ordering::Equal =&gt; println!("You win!"),
+    }
+}</code></pre>
+            <figcaption>فهرست 4-2: مدیریت مقادیر بازگشتی احتمالی از مقایسه دو عدد</figcaption>
+        </figure>
+
+        <p>ابتدا یک دستور <code>use</code> دیگر اضافه می کنیم که نوعی به نام <code>std::cmp::Ordering</code> را از کتابخانه استاندارد به محدوده دید می آورد. نوع <code>Ordering</code> نیز یک نوع شمارشی دیگر است و دارای واریانت های <code>Less</code> و <code>Greater</code> و <code>Equal</code> می باشد. این سه مورد همان سه نتیجه ممکنی هستند که هنگام مقایسه دو مقدار به دست می آیند.</p>
+
+        <p>سپس پنج خط جدید در پایین اضافه می کنیم که از نوع <code>Ordering</code> استفاده می کنند. متد <code>cmp</code> دو مقدار را با هم مقایسه می کند و می توان آن را روی هر چیزی که قابل مقایسه باشد فراخوانی کرد. این متد یک ارجاع به هر چیزی که می خواهید با آن مقایسه انجام دهید می گیرد که در اینجا متغیر <code>guess</code> را با <code>secret_number</code> مقایسه می کند. سپس یک واریانت از نوع شمارشی <code>Ordering</code> را که با دستور <code>use</code> به محدوده دید آوردیم برمی گرداند. ما از یک عبارت <code>match</code> استفاده می کنیم تا بر اساس اینکه کدام واریانت از <code>Ordering</code> از فراخوانی متد <code>cmp</code> با مقادیر <code>guess</code> و <code>secret_number</code> بازگشته است تصمیم بگیریم در ادامه چه کاری انجام دهیم.</p>
+
+        <p>یک عبارت <code>match</code> از تعدادی بازو (Arm) تشکیل شده است. یک بازو شامل یک الگو (Pattern) برای تطبیق دادن و کدی است که در صورت تطابق مقدار داده شده به <code>match</code> با الگوی آن بازو باید اجرا شود. زبان راست مقدار داده شده به <code>match</code> را می گیرد و به نوبت الگوی هر بازو را بررسی می کند. الگوها و ساختار <code>match</code> ویژگی های قدرتمندی در راست هستند که به شما اجازه می دهند شرایط متنوعی را که کد شما ممکن است با آن ها روبرو شود بیان کنید و مطمئن می شوند که تمام آن شرایط را مدیریت کرده اید. این ویژگی ها به ترتیب در فصل ششم و فصل نوزدهم با جزئیات کامل پوشش داده خواهند شد.</p>
+
+        <p>بیایید یک مثال را با عبارت <code>match</code> که در اینجا استفاده می کنیم مرور نماییم. فرض کنید کاربر عدد 50 را حدس زده است و عدد مخفی تولید شده به صورت تصادفی در این نوبت عدد 38 است.</p>
+
+        <p>زمانی که کد عدد 50 را با 38 مقایسه می کند متد <code>cmp</code> مقدار <code>Ordering::Greater</code> را برمی گرداند زیرا 50 بزرگ تر از 38 است. عبارت <code>match</code> مقدار <code>Ordering::Greater</code> را دریافت می کند و بررسی الگوی هر بازو را آغاز می نماید. ابتدا به الگوی اولین بازو یعنی <code>Ordering::Less</code> نگاه می کند و می بیند که مقدار <code>Ordering::Greater</code> با <code>Ordering::Less</code> مطابقت ندارد بنابراین کد آن بازو را نادیده می گیرد و به سراغ بازوی بعدی می رود. الگوی بازوی بعدی <code>Ordering::Greater</code> است که با مقدار <code>Ordering::Greater</code> مطابقت دارد. کد مرتبط با آن بازو اجرا خواهد شد و عبارت <code>Too big!</code> را روی صفحه نمایش چاپ می کند. عبارت <code>match</code> پس از اولین تطابق موفق به کار خود پایان می دهد بنابراین در این سناریو بازوی آخر را بررسی نخواهد کرد.</p>
+
+        <p>با این حال کد موجود در فهرست 4-2 هنوز کامپایل نخواهد شد. بیایید آن را امتحان کنیم:</p>
+
+<pre><code class="language-console" dir="ltr">$ cargo build
+   Compiling guessing_game v0.1.0 (file:///projects/guessing_game)
+error[E0308]: mismatched types
+  --&gt; src/main.rs:22:21
+   |
+22 |     match guess.cmp(&amp;secret_number) {
+   |                 --- ^^^^^^^^^^^^^^ expected `&amp;String`, found `&amp;{integer}`
+   |                 |
+   |                 arguments to this method are incorrect
+   |
+   = note: expected reference `&amp;String`
+              found reference `&amp;{integer}`
+note: method defined here
+  --&gt; /rustc/f6e511eec7342f59a25f7c0534f1dbea00d01b14/library/core/src/cmp.rs:840:8
+
+For more information about this error, try `rustc --explain E0308`.
+error: could not compile `guessing_game` (bin "guessing_game") due to 1 previous error</code></pre>
+
+        <p>هسته اصلی این خطا می گوید که <em>عدم تطابق نوع داده ها</em> (mismatched types) وجود دارد. زبان راست دارای یک سیستم نوع داده ایستا و قوی است. با این حال راست قابلیت استنتاج نوع داده (Type Inference) را نیز دارد. زمانی که ما <code>let mut guess = String::new()</code> را نوشتیم راست توانست تشخیص دهد که <code>guess</code> باید از نوع <code>String</code> باشد و ما را مجبور به نوشتن صریح نوع داده نکرد. از سوی دیگر متغیر <code>secret_number</code> یک نوع داده عددی است. چند نوع داده عددی در راست می توانند مقداری بین 1 تا 100 داشته باشند: نوع <code>i32</code> که یک عدد 32 بیتی است یا نوع <code>u32</code> که یک عدد 32 بیتی بدون علامت (نامنفی) است یا نوع <code>i64</code> که یک عدد 64 بیتی است و همین طور موارد دیگر. مگر اینکه خلاف آن مشخص شود راست به طور پیش فرض نوع <code>i32</code> را در نظر می گیرد که نوع متغیر <code>secret_number</code> است مگر اینکه اطلاعات نوع داده را جایی اضافه کنید که باعث شود راست یک نوع عددی متفاوت را استنتاج کند. دلیل خطای بالا این است که راست نمی تواند یک رشته متنی و یک نوع عددی را با هم مقایسه کند.</p>
+
+        <p>در نهایت ما می خواهیم رشته ای را که برنامه به عنوان ورودی می خواند به یک نوع داده عددی تبدیل کنیم تا بتوانیم آن را به صورت عددی با عدد مخفی مقایسه نماییم. این کار را با افزودن خط زیر به بدنه تابع <code>main</code> انجام می دهیم:</p>
+
+        <figure class="listing">
+            <span class="filename">Filename: src/main.rs</span>
+<pre><code class="">    // --snip--
+
+    let mut guess = String::new();
+
+    io::stdin()
+        .read_line(&amp;mut guess)
+        .expect("Failed to read line");
+
+    let guess: u32 = guess.trim().parse().expect("Please type a number!");
+
+    println!("You guessed: {guess}");
+
+    match guess.cmp(&amp;secret_number) {
+        Ordering::Less =&gt; println!("Too small!"),
+        Ordering::Greater =&gt; println!("Too big!"),
+        Ordering::Equal =&gt; println!("You win!"),
+    }</code></pre>
+        </figure>
+
+        <p>خط اضافه شده این است:</p>
+
+<pre><code class="">let guess: u32 = guess.trim().parse().expect("Please type a number!");</code></pre>
+
+        <p>ما یک متغیر به نام <code>guess</code> ایجاد می کنیم. اما صبر کنید، آیا برنامه از قبل یک متغیر به نام <code>guess</code> نداشت؟ چرا دارد اما خوشبختانه راست به ما اجازه می دهد مقدار قبلی متغیر <code>guess</code> را با یک متغیر جدید سایه اندازی یا پنهان (Shadow) کنیم. <em>سایه اندازی</em> به ما این امکان را می دهد که به جای مجبور شدن به ساخت دو متغیر منحصر به فرد مانند <code>guess_str</code> و <code>guess</code> از همان نام متغیر <code>guess</code> دوباره استفاده کنیم. ما این موضوع را با جزئیات بیشتر در فصل سوم پوشش خواهیم داد اما در حال حاضر بدانید که این ویژگی اغلب زمانی استفاده می شود که بخواهید مقداری را از یک نوع داده به نوع داده دیگری تبدیل کنید.</p>
+
+        <blockquote class="translator-note">
+            <strong>یادداشت مترجم درباره Shadowing (سایه اندازی متغیر)</strong>
+            سایه اندازی یا Shadowing با تغییرپذیر کردن متغیر توسط <code>mut</code> تفاوت دارد. در سایه اندازی با نوشتن مجدد کلیدواژه <code>let</code> عملا یک متغیر کاملا جدید با همان نام قبلی می سازیم که می تواند حتی نوع داده متفاوتی (مثلا تبدیل از <code>String</code> به <code>u32</code>) داشته باشد و متغیر قبلی از این خط به بعد از دسترس خارج می شود.
+        </blockquote>
+
+        <p>ما این متغیر جدید را به عبارت <code>guess.trim().parse()</code> مقید می کنیم. متغیر <code>guess</code> در این عبارت به متغیر <code>guess</code> اصلی اشاره دارد که حاوی ورودی به صورت یک رشته متنی بود. متد <code>trim</code> روی یک نمونه از <code>String</code> هرگونه فضای خالی را در ابتدا و انتهای رشته حذف می کند که برای مقایسه کردن رشته با نوع <code>u32</code> که فقط می تواند شامل داده های عددی باشد ضروری است. کاربر باید کلید <kbd>enter</kbd> را فشار دهد تا متد <code>read_line</code> را راضی کند و عدد حدس زده شده را ثبت نماید که این کار یک کاراکتر خط جدید به رشته اضافه می کند. به عنوان مثال اگر کاربر عدد <kbd>5</kbd> را تایپ کند و کلید <kbd>enter</kbd> را فشار دهد متغیر <code>guess</code> به این شکل خواهد بود: <code>5\n</code>. کاراکتر <code>\n</code> نشان دهنده خط جدید است (در ویندوز فشردن کلید <kbd>enter</kbd> منجر به یک بازگشت به سطر و یک خط جدید یعنی <code>\r\n</code> می شود). متد <code>trim</code> کاراکترهای <code>\n</code> یا <code>\r\n</code> را حذف می کند و تنها <code>5</code> باقی می ماند.</p>
+
+        <p>متد <code>parse</code> روی رشته ها یک رشته را به نوع داده دیگری تبدیل می کند. در اینجا ما از آن برای تبدیل از یک رشته به یک عدد استفاده می کنیم. ما باید با استفاده از <code>let guess: u32</code> به راست بگوییم که دقیقا چه نوع عددی مد نظر ماست. علامت دو نقطه (<code>:</code>) بعد از <code>guess</code> به راست می گوید که ما نوع داده متغیر را مشخص خواهیم کرد. زبان راست دارای چند نوع داده عددی توکار است و نوع <code>u32</code> که در اینجا دیده می شود یک عدد صحیح 32 بیتی بدون علامت است. این نوع یک انتخاب پیش فرض خوب برای یک عدد مثبت کوچک محسوب می شود. در فصل سوم درباره سایر نوع های عددی خواهید آموخت.</p>
+
+        <p>علاوه بر این، حاشیه نویسی نوع <code>u32</code> در این برنامه نمونه و مقایسه آن با <code>secret_number</code> به این معنی است که راست استنتاج خواهد کرد که <code>secret_number</code> نیز باید از نوع <code>u32</code> باشد. بنابراین اکنون مقایسه بین دو مقدار از یک نوع داده یکسان انجام خواهد شد.</p>
+
+        <p>متد <code>parse</code> فقط روی کاراکترهایی کار می کند که به طور منطقی قابل تبدیل به عدد باشند و بنابراین به راحتی ممکن است باعث بروز خطا شود. اگر برای مثال رشته شامل کاراکترهای <code>A👍%</code> باشد هیچ راهی برای تبدیل آن به یک عدد وجود نخواهد داشت. از آنجا که این متد ممکن است با شکست مواجه شود متد <code>parse</code> یک نوع <code>Result</code> برمی گرداند، درست همان کاری که متد <code>read_line</code> انجام می داد (که قبلا در بخش «مدیریت خطاهای احتمالی با نوع Result» بررسی شد). ما با این <code>Result</code> نیز به همان روش قبلی و با استفاده دوباره از متد <code>expect</code> برخورد خواهیم کرد. اگر متد <code>parse</code> به دلیل ناتوانی در ساخت یک عدد از روی رشته یک واریانت <code>Err</code> از نوع <code>Result</code> برگرداند، فراخوانی <code>expect</code> بازی را متوقف کرده و پیامی را که به آن داده ایم چاپ می کند. اگر متد <code>parse</code> بتواند با موفقیت رشته را به یک عدد تبدیل کند واریانت <code>Ok</code> از نوع <code>Result</code> را برمی گرداند و متد <code>expect</code> عددی را که می خواهیم از مقدار <code>Ok</code> استخراج کرده و بازمی گرداند.</p>
+
+        <p>حالا بیایید برنامه را اجرا کنیم:</p>
+
+<pre><code class="language-console" dir="ltr">$ cargo run
+   Compiling guessing_game v0.1.0 (file:///projects/guessing_game)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.43s
+     Running `target/debug/guessing_game`
+Guess the number!
+The secret number is: 58
+Please input your guess.
+  76
+You guessed: 76
+Too big!</code></pre>
+
+        <p>بسیار خوب! حتی با وجود اینکه قبل از حدس عدد فاصله های خالی اضافه شد برنامه همچنان تشخیص داد که کاربر عدد 76 را حدس زده است. برنامه را چند بار اجرا کنید تا رفتارهای مختلف با انواع ورودی ها را بسنجید: عدد را درست حدس بزنید، یک عدد بسیار بزرگ حدس بزنید و یک عدد بسیار کوچک حدس بزنید.</p>
+
+        <p>ما اکنون بخش بزرگی از بازی را در حالت کارا داریم اما کاربر فقط می تواند یک حدس بزند. بیایید با اضافه کردن یک حلقه این رفتار را تغییر دهیم.</p>
+
+        <h2 id="allowing-multiple-guesses-with-looping">امکان ثبت چندین حدس با استفاده از حلقه</h2>
+
+        <p>کلیدواژه <code>loop</code> یک حلقه بی نهایت ایجاد می کند. ما یک حلقه به برنامه اضافه می کنیم تا به کاربران شانس بیشتری برای حدس زدن عدد بدهیم:</p>
+
+        <figure class="listing">
+            <span class="filename">Filename: src/main.rs</span>
+<pre><code class="">    // --snip--
+
+    println!("The secret number is: {secret_number}");
+
+    loop {
+        println!("Please input your guess.");
+
+        // --snip--
+
+        match guess.cmp(&amp;secret_number) {
+            Ordering::Less =&gt; println!("Too small!"),
+            Ordering::Greater =&gt; println!("Too big!"),
+            Ordering::Equal =&gt; println!("You win!"),
+        }
+    }
+}</code></pre>
+        </figure>
+
+        <p>همان طور که می بینید ما همه چیز از بخش درخواست ورودی حدس به بعد را به داخل یک حلقه منتقل کرده ایم. مطمئن شوید که خطوط داخل حلقه را هر کدام به اندازه چهار فاصله دیگر تورفتگی (Indent) بدهید و برنامه را دوباره اجرا کنید. برنامه اکنون تا ابد یک حدس دیگر درخواست خواهد کرد که این موضوع در واقع یک مشکل جدید ایجاد می کند. به نظر نمی رسد کاربر بتواند از بازی خارج شود.</p>
+
+        <p>کاربر همیشه می تواند با استفاده از میانبر صفحه کلید <kbd>ctrl</kbd>-<kbd>c</kbd> برنامه را متوقف کند. اما راه دیگری نیز برای فرار از این هیولای سیری ناپذیر وجود دارد که در بخش بحث درباره <code>parse</code> در قسمت «مقایسه کردن حدس با عدد مخفی» به آن اشاره کردیم: اگر کاربر یک پاسخ غیرعددی وارد کند برنامه متوقف (Crash) خواهد شد. ما می توانیم از این ویژگی به نفع خودمان استفاده کنیم تا به کاربر اجازه خروج بدهیم، همان طور که در اینجا نشان داده شده است:</p>
+
+<pre><code class="language-console" dir="ltr">$ cargo run
+   Compiling guessing_game v0.1.0 (file:///projects/guessing_game)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.50s
+     Running `target/debug/guessing_game`
+Guess the number!
+The secret number is: 59
+Please input your guess.
+45
+You guessed: 45
+Too small!
+Please input your guess.
+60
+You guessed: 60
+Too big!
+Please input your guess.
+59
+You guessed: 59
+You win!
+Please input your guess.
+quit
+thread 'main' panicked at src/main.rs:28:47:
+Please type a number!: ParseIntError { kind: InvalidDigit }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</code></pre>
+
+        <p>تایپ کردن <code>quit</code> بازی را متوقف می کند اما همان طور که متوجه خواهید شد وارد کردن هر ورودی غیرعددی دیگری نیز همین کار را انجام می دهد. حداقل می توان گفت که این رفتار ایده آل نیست؛ ما می خواهیم بازی زمانی که عدد صحیح حدس زده می شود نیز به طور خودکار متوقف گردد.</p>
+
+        <h3 id="quitting-after-a-correct-guess">خروج از برنامه پس از یک حدس درست</h3>
+
+        <p>بیایید بازی را طوری برنامه نویسی کنیم که با اضافه کردن یک دستور <code>break</code> در صورت برنده شدن کاربر از بازی خارج شود:</p>
+
+        <figure class="listing">
+            <span class="filename">Filename: src/main.rs</span>
+<pre><code class="">        // --snip--
+
+        match guess.cmp(&amp;secret_number) {
+            Ordering::Less =&gt; println!("Too small!"),
+            Ordering::Greater =&gt; println!("Too big!"),
+            Ordering::Equal =&gt; {
+                println!("You win!");
+                break;
+            }
+        }
+    }
+}</code></pre>
+        </figure>
+
+        <p>افزودن خط <code>break</code> بعد از <code>You win!</code> باعث می شود زمانی که کاربر عدد مخفی را به درستی حدس می زند برنامه از حلقه خارج شود. خروج از حلقه به معنای خروج از برنامه نیز هست زیرا حلقه آخرین بخش از تابع <code>main</code> است.</p>
+
+        <h3 id="handling-invalid-input">مدیریت ورودی نامعتبر</h3>
+
+        <p>برای پالایش بیشتر رفتار بازی، به جای اینکه برنامه هنگام وارد کردن یک مقدار غیرعددی توسط کاربر متوقف شود بیایید بازی را طوری تنظیم کنیم که ورودی غیرعددی را نادیده بگیرد تا کاربر بتواند به حدس زدن ادامه دهد. ما می توانیم این کار را با تغییر دادن خطی که در آن متغیر <code>guess</code> از نوع <code>String</code> به <code>u32</code> تبدیل می شود انجام دهیم که در فهرست 5-2 نشان داده شده است.</p>
+
+        <figure class="listing">
+            <span class="filename">Filename: src/main.rs</span>
+<pre><code class="">        // --snip--
+
+        io::stdin()
+            .read_line(&amp;mut guess)
+            .expect("Failed to read line");
+
+        let guess: u32 = match guess.trim().parse() {
+            Ok(num) =&gt; num,
+            Err(_) =&gt; continue,
+        };
+
+        println!("You guessed: {guess}");
+
+        // --snip--</code></pre>
+            <figcaption>فهرست 5-2: نادیده گرفتن یک حدس غیرعددی و درخواست یک حدس دیگر به جای متوقف کردن برنامه</figcaption>
+        </figure>
+
+        <p>ما یک فراخوانی <code>expect</code> را به یک عبارت <code>match</code> تغییر می دهیم تا از متوقف شدن برنامه در زمان خطا به سمت مدیریت واقعی خطا حرکت کنیم. به یاد داشته باشید که متد <code>parse</code> یک نوع <code>Result</code> برمی گرداند و <code>Result</code> یک نوع شمارشی است که دارای واریانت های <code>Ok</code> و <code>Err</code> می باشد. ما در اینجا از یک عبارت <code>match</code> استفاده می کنیم، درست همان طور که در مورد نتیجه <code>Ordering</code> حاصل از متد <code>cmp</code> انجام دادیم.</p>
+
+        <p>اگر متد <code>parse</code> بتواند با موفقیت رشته را به یک عدد تبدیل کند یک مقدار <code>Ok</code> برمی گرداند که حاوی عدد نهایی است. آن مقدار <code>Ok</code> با الگوی بازوی اول مطابقت پیدا می کند و عبارت <code>match</code> صرفا مقدار <code>num</code> را که متد <code>parse</code> تولید کرده و داخل مقدار <code>Ok</code> قرار داده است بازمی گرداند. در نهایت آن عدد دقیقا در همان جایی قرار می گیرد که ما می خواهیم یعنی در متغیر جدید <code>guess</code> که در حال ایجاد آن هستیم.</p>
+
+        <p>اگر متد <code>parse</code> نتواند رشته را به یک عدد تبدیل کند یک مقدار <code>Err</code> برمی گرداند که حاوی اطلاعات بیشتری درباره خطاست. مقدار <code>Err</code> با الگوی <code>Ok(num)</code> در بازوی اول <code>match</code> مطابقت ندارد اما با الگوی <code>Err(_)</code> در بازوی دوم مطابقت پیدا می کند. علامت زیرخط <code>_</code> یک مقدار همه گیر (Catch-all) است؛ در این مثال ما می گوییم که می خواهیم تمام مقادیر <code>Err</code> را بدون توجه به اینکه چه اطلاعاتی در داخل آن ها وجود دارد مطابقت دهیم. بنابراین برنامه کد بازوی دوم یعنی <code>continue</code> را اجرا می کند که به برنامه می گوید به تکرار بعدی حلقه <code>loop</code> برود و یک حدس دیگر درخواست کند. به این ترتیب برنامه عملا تمامی خطاهایی را که متد <code>parse</code> ممکن است با آن ها مواجه شود نادیده می گیرد.</p>
+
+        <p>اکنون همه چیز در برنامه باید همان طور که انتظار می رود کار کند. بیایید آن را امتحان کنیم:</p>
+
+<pre><code class="language-console" dir="ltr">$ cargo run
+   Compiling guessing_game v0.1.0 (file:///projects/guessing_game)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.13s
+     Running `target/debug/guessing_game`
+Guess the number!
+The secret number is: 61
+Please input your guess.
+10
+You guessed: 10
+Too small!
+Please input your guess.
+99
+You guessed: 99
+Too big!
+Please input your guess.
+foo
+Please input your guess.
+61
+You guessed: 61
+You win!</code></pre>
+
+        <p>عالی است! تنها با یک تغییر کوچک نهایی بازی حدس عدد را به پایان می رسانیم. به یاد بیاورید که برنامه هنوز در حال چاپ کردن عدد مخفی است. این کار برای آزمایش کردن برنامه خوب بود اما بازی را خراب می کند. بیایید خط <code>println!</code> را که عدد مخفی را خروجی می دهد حذف کنیم. فهرست 6-2 کد نهایی را نشان می دهد.</p>
+
+        <figure class="listing">
+            <span class="filename">Filename: src/main.rs</span>
+<pre><code class="">use rand::Rng;
+use std::cmp::Ordering;
+use std::io;
+
+fn main() {
+    println!("Guess the number!");
+
+    let secret_number = rand::rng().random_range(1..=100);
+
+    loop {
+        println!("Please input your guess.");
+
+        let mut guess = String::new();
+
+        io::stdin()
+            .read_line(&amp;mut guess)
+            .expect("Failed to read line");
+
+        let guess: u32 = match guess.trim().parse() {
+            Ok(num) =&gt; num,
+            Err(_) =&gt; continue,
+        };
+
+        println!("You guessed: {guess}");
+
+        match guess.cmp(&amp;secret_number) {
+            Ordering::Less =&gt; println!("Too small!"),
+            Ordering::Greater =&gt; println!("Too big!"),
+            Ordering::Equal =&gt; {
+                println!("You win!");
+                break;
+            }
+        }
+    }
+}</code></pre>
+            <figcaption>فهرست 6-2: کد کامل بازی حدس عدد</figcaption>
+        </figure>
+
+        <p>در این نقطه شما با موفقیت بازی حدس عدد را ساخته اید. تبریک می گویم!</p>
+
+        <h2 id="summary">خلاصه</h2>
+
+        <p>این پروژه یک روش عملی برای آشنایی شما با بسیاری از مفاهیم جدید زبان راست بود: کلیدواژه <code>let</code>، عبارت <code>match</code>، توابع، استفاده از کریت های خارجی و موارد بیشتر. در چند فصل آینده شما درباره این مفاهیم با جزئیات بیشتری خواهید آموخت. فصل سوم مفاهیمی را پوشش می دهد که اکثر زبان های برنامه نویسی دارند مانند متغیرها و نوع داده ها و توابع و نحوه استفاده از آن ها را در راست نشان می دهد. فصل چهارم مبحث مالکیت (Ownership) را بررسی می کند که ویژگی ای است که زبان راست را از سایر زبان ها متمایز می سازد. فصل پنجم به ساختارها (Structs) و نحو نوشتاری متدها می پردازد و فصل ششم چگونگی کارکرد نوع های شمارشی (Enums) را توضیح می دهد.</p>
+    </main>
+</div>
+<script>
+    (function () {
+        const htmlEl = document.documentElement;
+        const toggleBtn = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const themeText = document.getElementById('themeText');
+
+        function applyTheme(theme) {
+            htmlEl.setAttribute('data-theme', theme);
+            if (theme === 'dark') {
+                themeIcon.textContent = '☀️';
+                themeText.textContent = 'حالت روشن';
+            } else {
+                themeIcon.textContent = '🌙';
+                themeText.textContent = 'حالت تاریک';
+            }
+        }
+
+        const savedTheme = localStorage.getItem('rust_book_fa_theme');
+        if (savedTheme) {
+            applyTheme(savedTheme);
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            applyTheme('dark');
+        }
+
+        toggleBtn.addEventListener('click', function () {
+            const current = htmlEl.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            applyTheme(next);
+            localStorage.setItem('rust_book_fa_theme', next);
+        });
+    })();
+</script>
+</body>
+</html>

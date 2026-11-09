@@ -1,0 +1,28 @@
+body {
+    direction: rtl;
+    font-family: "Vazirmatn", "Vazir", "IRANSans", Tahoma, sans-serif;
+    line-height: 1.85;
+}
+
+.content main p,
+.content main li,
+.content main blockquote {
+    text-align: justify;
+}
+
+pre, code {
+    direction: ltr;
+    text-align: left;
+    font-family: "JetBrains Mono", Consolas, monospace;
+}
+
+span.filename {
+    display: inline-block;
+    direction: ltr;
+    background-color: #334155;
+    color: #f8fafc;
+    padding: 2px 10px;
+    border-radius: 4px 4px 0 0;
+    font-family: monospace;
+    font-size: 0.85em;
+}

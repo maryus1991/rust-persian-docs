@@ -1,0 +1,12 @@
+[book]
+title = "زبان برنامه نویسی راست"
+authors = ["mez"]
+description = "ترجمه فارسی کتاب رسمی زبان برنامه نویسی راست"
+language = "fa"
+ 
+src = "src"
+
+[output.html]
+default-theme = "light"
+preferred-dark-theme = "navy"
+additional-css = ["rtl.css"]
