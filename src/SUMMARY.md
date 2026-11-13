@@ -6,3 +6,4 @@
 - [فصل 4](./chapter_4.md)
 - [فصل 5](./chapter_5.md)
 - [فصل 6](./chapter_6.md)
+- [فصل 7](./chapter_7.md)
